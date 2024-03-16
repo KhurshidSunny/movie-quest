@@ -10,35 +10,45 @@ export default function App() {
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [query, setQuery] = useState("");
 
-  useEffect(function () {
-    async function fetchMovies() {
-      try {
-        setIsLoading(true);
-        const res = await fetch(
-          `http://www.omdbapi.com/?apikey=${KEY}&s={dfsdf}`
-        );
+  useEffect(
+    function () {
+      async function fetchMovies() {
+        try {
+          setIsLoading(true);
+          setError("");
+          const res = await fetch(
+            `http://www.omdbapi.com/?apikey=${KEY}&s={${query}}`
+          );
 
-        if (!res.ok)
-          throw new Error("Something went wrong with movie fetching");
+          if (!res.ok)
+            throw new Error("Something went wrong with movie fetching");
 
-        const data = await res.json();
-        if (data.Response === "False") throw new Error("Movie not found");
+          const data = await res.json();
+          if (data.Response === "False") throw new Error("Movie not found");
 
-        setMovies(data.Search);
-        console.log(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
+          setMovies(data.Search);
+        } catch (err) {
+          setError(err.message);
+        } finally {
+          setIsLoading(false);
+        }
+
+        if (query.length < 3) {
+          setMovies([]);
+          setError("");
+          return;
+        }
       }
-    }
-    fetchMovies();
-  }, []);
+      fetchMovies();
+    },
+    [query]
+  );
   return (
     <>
       <Navbar>
-        <Search />
+        <Search query={query} setQuery={setQuery} />
         <NumResults movies={movies} />
       </Navbar>
       <Main>
@@ -86,9 +96,7 @@ function Logo() {
   );
 }
 
-function Search() {
-  const [query, setQuery] = useState("");
-
+function Search({ query, setQuery }) {
   return (
     <input
       className="search"
