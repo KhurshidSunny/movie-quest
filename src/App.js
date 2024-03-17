@@ -63,6 +63,7 @@ export default function App() {
           return;
         }
       }
+      handleClose();
       fetchMovies();
       return function () {
         controller.abort();
@@ -268,6 +269,24 @@ function MovieDetail({ selectedId, onCloseMovie, onAddMovie, watched }) {
       };
     },
     [title]
+  );
+
+  useEffect(
+    function () {
+      function callback(e) {
+        if (e.code === "Escape") {
+          onCloseMovie();
+          console.log("CLOSING");
+        }
+      }
+      document.addEventListener("keydown", callback);
+
+      return function () {
+        document.removeEventListener("keydown", callback);
+      };
+    },
+
+    [onCloseMovie]
   );
 
   return (
