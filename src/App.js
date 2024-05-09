@@ -200,7 +200,6 @@ function MovieDetail({ selectedId, onCloseMovie, onAddMovie, watched }) {
     Poster: poster,
     Released: released,
     Runtime: runtime,
-    imdbID,
   } = movie;
 
   function handleAdd() {
